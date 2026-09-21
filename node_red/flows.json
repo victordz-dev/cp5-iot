@@ -1,0 +1,335 @@
+[
+    {
+        "id": "2a9ec9f74151b89d",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "mqtt_in",
+        "type": "mqtt in",
+        "z": "2a9ec9f74151b89d",
+        "name": "Recebe Distância ESP32",
+        "topic": "fiap/iot/re/distancia",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "broker_hivemq",
+        "nl": false,
+        "rap": true,
+        "inputs": 0,
+        "x": 410,
+        "y": 280,
+        "wires": [
+            [
+                "function_format",
+                "dash_gauge",
+                "dash_chart",
+                "debug_node"
+            ]
+        ]
+    },
+    {
+        "id": "function_format",
+        "type": "function",
+        "z": "2a9ec9f74151b89d",
+        "name": "Formatar Payload (Distância + Timestamp)",
+        "func": "var distancia = parseInt(msg.payload);\nvar timestamp = new Date().toISOString();\n\nmsg.payload = {\n    \"distancia\": distancia,\n    \"timestamp\": timestamp\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 280,
+        "wires": [
+            [
+                "http_post"
+            ]
+        ]
+    },
+    {
+        "id": "http_post",
+        "type": "http request",
+        "z": "2a9ec9f74151b89d",
+        "name": "Enviar para API Flask",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:5000/api/dados_re",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1070,
+        "y": 280,
+        "wires": [
+            [
+                "debug_api_response"
+            ]
+        ]
+    },
+    {
+        "id": "dash_gauge",
+        "type": "ui-gauge",
+        "z": "2a9ec9f74151b89d",
+        "name": "Distância (cm)",
+        "group": "dash_group_re",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": 0,
+        "height": 0,
+        "gtype": "gauge-34",
+        "gstyle": "needle",
+        "title": "Distância (cm)",
+        "alwaysShowTitle": false,
+        "units": "cm",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#ca3838",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "50",
+                "color": "#e6e600",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "100",
+                "color": "#00b500",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "400",
+        "sizeThickness": "20",
+        "sizeGap": "20",
+        "sizeKeyThickness": "20",
+        "className": "",
+        "x": 670,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dash_chart",
+        "type": "ui-chart",
+        "z": "2a9ec9f74151b89d",
+        "group": "dash_group_re",
+        "name": "Histórico de Ré",
+        "label": "Histórico de Distância",
+        "order": 2,
+        "chartType": "line",
+        "category": "payload",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "",
+        "yAxisPropertyType": "property",
+        "ymin": "0",
+        "ymax": "400",
+        "bins": "",
+        "stackSeries": false,
+        "pointRadius": "",
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "60",
+        "removeOlderPoints": "",
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#ffbb78",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 0,
+        "height": 0,
+        "className": "",
+        "interpolation": "linear",
+        "x": 670,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "debug_node",
+        "type": "debug",
+        "z": "2a9ec9f74151b89d",
+        "name": "Debug ESP32",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "debug_api_response",
+        "type": "debug",
+        "z": "2a9ec9f74151b89d",
+        "name": "Debug API Flask",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "broker_hivemq",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Public",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "dash_group_re",
+        "type": "ui-group",
+        "name": "Sensores de Ré",
+        "page": "dash_page",
+        "width": "6",
+        "height": "",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "dash_page",
+        "type": "ui-page",
+        "name": "Sistema de Ré FIAP",
+        "ui": "dash_base",
+        "path": "/re",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "43968f7b91314ed1",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "dash_base",
+        "type": "ui-base",
+        "name": "Base Dashboard UI",
+        "path": "/ui",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-control",
+            "ui-notification"
+        ]
+    },
+    {
+        "id": "43968f7b91314ed1",
+        "type": "ui-theme",
+        "name": "Theme Name",
+        "colors": {
+            "surface": "#fcfcfd",
+            "primary": "#0d74ce",
+            "bgPage": "#f9f9fb",
+            "groupBg": "#ffffff",
+            "groupOutline": "#d9d9e0"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "71403a40820764ba",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.31.0"
+        }
+    }
+]
