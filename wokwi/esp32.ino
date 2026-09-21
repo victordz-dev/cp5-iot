@@ -1,15 +1,15 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-// Pinos do HC-SR04
+// HC-SR04
 #define TRIG_PIN 5
 #define ECHO_PIN 18
 
-// Configurações de WiFi (Wokwi usa rede virtual)
+// WIFI
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 
-// Configurações de MQTT
+// MQTT
 const char* mqtt_server = "broker.hivemq.com";
 const int mqtt_port = 1883;
 const char* mqtt_topic = "fiap/iot/re/distancia";
@@ -74,10 +74,9 @@ void loop() {
   client.loop();
 
   unsigned long now = millis();
-  if (now - lastMsg > 1000) { // Publica a cada 1 segundo
+  if (now - lastMsg > 1000) {
     lastMsg = now;
     
-    // Leitura do sensor ultrassônico
     digitalWrite(TRIG_PIN, LOW);
     delayMicroseconds(2);
     digitalWrite(TRIG_PIN, HIGH);
@@ -85,16 +84,14 @@ void loop() {
     digitalWrite(TRIG_PIN, LOW);
     
     duration = pulseIn(ECHO_PIN, HIGH);
-    distance = duration * 0.034 / 2; // Calcula a distância em cm
+    distance = duration * 0.034 / 2;
     
     Serial.print("Distância: ");
     Serial.print(distance);
     Serial.println(" cm");
-    
-    // Prepara payload
+
     String payload = String(distance);
-    
-    // Publica no tópico MQTT
+
     client.publish(mqtt_topic, payload.c_str());
   }
 }
