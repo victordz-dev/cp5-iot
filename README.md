@@ -12,7 +12,7 @@
 ### 🖼️ Prints e Arquivos Node-RED
 
 **1. Arquivo do fluxo:**
-O arquivo `fluxo.json` está incluído na pasta `node_red`.
+O arquivo `flows.json` está incluído na pasta `node_red`.
 
 **2. Print do Fluxo no Node-RED:**
 ![Print do Fluxo no Node-RED](printscreens/dashboard.png)
